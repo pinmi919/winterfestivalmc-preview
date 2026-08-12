@@ -40,6 +40,19 @@ jobs:
       - name: Build preview
         run: npm run build -- --base=/winterfestivalmc-preview/
 
+      - name: Harden preview metadata
+        run: |
+          rm -f dist/CNAME
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('dist/index.html')
+          html = path.read_text(encoding='utf-8')
+          html = html.replace('content="index, follow, max-image-preview:large"', 'content="noindex, nofollow, noarchive"')
+          html = html.replace('<link rel="canonical" href="https://winterfestivalmc.com/" />', '')
+          html = html.replace('<meta property="og:url" content="https://winterfestivalmc.com/" />', '')
+          path.write_text(html, encoding='utf-8')
+          PY
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
